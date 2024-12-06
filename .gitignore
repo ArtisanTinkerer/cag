@@ -132,3 +132,5 @@ ngrok.exe
 
 # Node
 node_modules/
+
+.idea

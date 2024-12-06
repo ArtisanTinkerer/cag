@@ -48,4 +48,6 @@ urlpatterns = [
         views.payment_complete,
         name='admin-payment-complete',
     ),
+
+    path('search/', views.search, name='search'),
 ]

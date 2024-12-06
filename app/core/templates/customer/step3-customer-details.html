@@ -80,7 +80,7 @@
     const surname = document.getElementById('id_last_name').value;
      console.log(postcode  + " " + surname )
 
-    fetch(`/search?postcode=${encodeURIComponent(postcode)}&${encodeURIComponent(surname)}`)
+    fetch(`/search?postcode=${encodeURIComponent(postcode)}&surname=${encodeURIComponent(surname)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');

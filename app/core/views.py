@@ -4,9 +4,15 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.urls import reverse
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 
 from .models import Donation
 from .mixins import StepMixin
+
+from django.views.decorators.csrf import csrf_exempt
 
 
 # -------------------------------------------------------------------------------------------------
@@ -199,3 +205,15 @@ def payment_complete(request, pk):
             'donations_today_href': reverse('admin-donations-today'),
         },
     )
+
+@csrf_exempt #todo remove
+def search(request):
+    if request.method == 'GET':
+        postcode = request.GET.get('postcode', '')
+        surname = request.GET.get('surname', '')
+
+
+        # Mock search results - replace with your actual logic
+        results = [f'Result for {postcode} {i}' for i in range(1, 6)]
+        return JsonResponse({'results': results})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
