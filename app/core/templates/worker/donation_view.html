@@ -1,0 +1,43 @@
+{% extends 'worker/base.html' %}
+{% load sumup %}
+
+{% block content %}
+<div class="mb-4">
+    {% url 'admin-donations-today' as donations_today_href %}
+    {% include 'widgets/link.html' with text='Back to donations' href=donations_today_href back_link=True %}
+</div>
+<div>
+    <div class="text-center mt-4">
+        <h2 className="mt-4 text-lg font-semibold text-gray-900">
+            Please select a payment method:
+        </h2>
+        <div>
+            <div class="py-2">
+                <dt class="text-sm font-medium text-gray-500">Customer</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{ donation.customer_name }}</dd>
+            </div>
+            <div class="py-2">
+                <dt class="text-sm font-medium text-gray-500">Car Registration</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{ donation.number_plate|upper }}</dd>
+            </div>
+            <div class="py-2">
+                <dt class="text-sm font-medium text-gray-500">Payment</dt>
+                <dd class="mt-1 text-sm text-gray-900">£{{ donation.amount }}</dd>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="my-4">
+    {% generate_sumup_url donation as card_payment_url %}
+    {% url 'admin-payment-complete' donation.id as cash_payment_url %}
+
+    {% include 'widgets/link.html' with text='Take Card Payment' href=card_payment_url confirm_text='Please confirm the customer would like to pay by card' %}
+    {% with cash_payment_url|add:'?cash=True' as cash_payment_url_full %}
+        {% include 'widgets/link.html' with text='Cash Collected' href=cash_payment_url_full confirm_text='Please confirm cash payment has been taken' %}
+    {% endwith %}
+    <form method="post" class="text-center mt-4">
+        {% csrf_token %}
+        <input type="submit" value="Delete Donation" class="underline text-sm text-gray-700 cursor-pointer" onclick="return confirm('Are you sure you want to delete this donation?')" />
+    </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  web:
+    container_name: cag_car_wash_web
+    build: ./app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+    env_file:
+      - .env.dev
+    depends_on:
+      - db
+  db:
+    container_name: cag_car_wash_db
+    image: postgres:14.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=car_wash
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=superuser
+
+volumes:
+  postgres_data:

@@ -1,0 +1,44 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'styles/tailwind.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    {% block head_extra %}{% endblock head_extra %}
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+
+    <title>Challenge Adventure Group Car Wash</title>
+</head>
+<body>
+    <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-4 ">
+        {% if user.is_staff %}
+            <div class="mb-4">
+                {% url 'admin-donations-today' as view_orders_url %}
+                {% include 'widgets/link.html' with text='View Orders' href=view_orders_url %}
+            </div>
+        {% endif %}
+
+        {% include 'widgets/header.html' %}
+
+        <div class="mt-4">
+            {% block content %}{% endblock %}
+        </div>
+
+        {% block steps %}
+            {% include 'widgets/steps.html' %}
+        {% endblock steps %}
+    </div>
+</body>
+</html>

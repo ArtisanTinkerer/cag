@@ -1,0 +1,11 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<h1>
+    You haven't ticked the Gift Aid box - are you sure?
+</h1>
+<div>
+    {% include 'widgets/link.html' with text='Yes, I don\'t pay tax' href=customer_email_link %}
+    {% include 'widgets/link.html' with text='No, I want to Gift Aid my donation' href=customer_details_link %}
+</div>    
+{% endblock content %}

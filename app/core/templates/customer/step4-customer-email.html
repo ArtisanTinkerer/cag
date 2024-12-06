@@ -1,0 +1,18 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<p>
+    If we don’t already have it, please enter your email address and we’ll email you details of when we are CAGwash-ing next (we don’t share your address with anyone)
+</p>
+<form method="POST" class="mt-4">
+    {% csrf_token %}
+
+    {% include 'widgets/forms/form_error.html' %}
+
+    <div class="space-y-3">
+        {% include 'widgets/forms/input.html' with field=form.email %}
+    </div>
+    
+    {% include 'widgets/button.html' with text='I\'m ready to pay' %}
+</form>
+{% endblock content %}

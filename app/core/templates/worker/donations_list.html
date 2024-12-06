@@ -1,0 +1,67 @@
+{% extends 'worker/base.html' %}
+{% load sumup %}
+
+{% block content %}
+<div class="mb-4">
+    {% include 'widgets/link.html' with text='Create New Donation' href='/' %}
+    <div class="mt-2 text-center">
+        <a href="{% url 'admin:index' %}" class="underline text-sm text-gray-700">View admin site</a>
+    </div>
+</div>
+
+<h2 className="text-lg font-semibold text-gray-900">
+    Today's Donations
+</h2>
+<p className="mt-2 text-sm text-gray-700">
+    Showing today's unpaid donations.
+</p>
+
+<div class="overflow-hidden">
+    <ul role="list" class="divide-y divide-gray-200">
+        {% for donation in object_list %}
+            <li>
+                <a href="{% url 'admin-unpaid-donation' donation.id %}" class="block hover:bg-gray-50">
+                    <div class="py-4 flex items-center">
+                        <div class="min-w-0 flex-1">
+                            <div class="truncate">
+                                <div class="flex text-sm">
+                                    <p class="text-lg font-semibold text-blue-500 truncate">{{ donation.number_plate|upper }}</p>
+                                    <p class="ml-1 flex-shrink-0 font-normal text-gray-500 my-auto">{{ donation.customer_name }}</p>
+                                </div>
+                                <div class="mt-2 flex">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <!-- Heroicon name: solid/calendar -->
+                                        <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <p>
+                                            <time datetime="2020-01-07">{{ donation.donation_date }}</time>
+                                        </p>
+                                        <!-- Heroicon name: outline/currency-pound -->
+                                        <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9a2 2 0 10-4 0v5a2 2 0 01-2 2h6m-6-4h4m8 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <p>
+                                            <time datetime="2020-01-07">£{{ donation.amount }}</time>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ml-5 flex-shrink-0">
+                            <!-- Heroicon name: solid/chevron-right -->
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        {% empty %}
+            <p className="mt-4 text-sm text-gray-700">
+                No unpaid donations to show.
+            </p>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock content %}

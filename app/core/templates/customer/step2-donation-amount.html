@@ -1,0 +1,122 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<h1>
+    Please enter the amount you would like to donate.
+</h1>
+<p class="mt-2">
+    We accept cash or card. Payments are collected once we've washed your car.
+</p>
+
+<form id="form" method="POST" class="mt-4">
+    {% csrf_token %}
+
+    {% include 'widgets/forms/form_error.html' %}
+
+    <div>
+        <div class="flex items-center justify-between">
+            {% include 'widgets/forms/_label.html' with label='Donation Amount' %}
+        </div>
+
+        <fieldset>
+            <div class="grid grid-cols-3 gap-3">
+                <button id="amount-button-1" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                    <input type="radio" name="amount" value="5.00" class="sr-only">
+                    <span>£5.00</span>
+                </button>
+                <button id="amount-button-2" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                    <input type="radio" name="amount" value="7.50" class="sr-only" >
+                    <span>£7.50</span>
+                </button>
+                <button id="amount-button-3" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                    <input type="radio" name="amount" value="10.00" class="sr-only" >
+                    <span>£10.00</span>
+                </button>
+            </div>
+        </fieldset>
+    </div>
+    
+    <div class="mt-2">
+        {% include 'widgets/forms/decimal_input.html' with field=form.amount prefix='£' min='0' max='100' step='.01' label='or another amount'  %}
+    </div>
+    
+    {% include 'widgets/button.html' with text='Next' %}
+</form>
+
+<script>
+    (function() {
+        const checkedClasses = 'bg-gradient border-transparent text-white hover:bg-blue-600';
+        const notCheckedClasses = 'bg-white border-gray-200 text-gray-900 hover:bg-gray-50';
+        
+        const otherAmountInput = document.getElementById('id_amount');
+        const amountButton1 = document.getElementById('amount-button-1');
+        const amountButton2 = document.getElementById('amount-button-2');
+        const amountButton3 = document.getElementById('amount-button-3');
+        const form = document.getElementById('form');
+
+        let checkedAmountButtonId;
+
+        const removeCheckedClass = (id) => {
+            const element = document.getElementById(id);
+
+            if (element) {
+                element.classList.remove(...checkedClasses.split(' '));
+                element.classList.add(...notCheckedClasses.split(' '));
+                element.firstElementChild.checked = false;
+            }
+        }
+
+        const addCheckedClass = (id) => {
+            const element = document.getElementById(id);
+
+            if (element) {
+                element.classList.remove(...notCheckedClasses.split(' '));
+                element.classList.add(...checkedClasses.split(' '));
+                element.firstElementChild.checked = true;
+            }
+        }
+
+        const handleAmountClicked = function() {
+            if (this.id !== otherAmountInput.id && this.id === checkedAmountButtonId) return;
+            
+            checkedAmountButtonId = this.id;
+
+            // Remove checked classes. 
+            const elements = document.getElementsByClassName(checkedClasses);
+            for (let element of elements) {
+                removeCheckedClass(element.id);
+            }
+
+            // Add checked class to selected element.
+            if (this.id !== otherAmountInput.id) {
+                otherAmountInput.value = '';
+                addCheckedClass(this.id);
+            }
+        }
+
+        // If the other amount input field is changed to a non-empty value, remove the active checked box.
+        otherAmountInput.addEventListener('change', handleAmountClicked);
+        amountButton1.onclick = handleAmountClicked;
+        amountButton2.onclick = handleAmountClicked;
+        amountButton3.onclick = handleAmountClicked;
+
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            const formData = Object.fromEntries(new FormData(e.target));
+
+            if (!formData.amount) {
+                const checkedInput = document.querySelector("input[name='amount'][type='radio']:checked");
+
+                if (!checkedInput) {
+                    alert('no amount set')
+                    return;
+                }
+
+                otherAmountInput.value = checkedInput.value;
+            }
+            
+            this.submit()
+        }
+    })();
+</script>
+{% endblock content %}

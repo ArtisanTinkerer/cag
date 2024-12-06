@@ -1,0 +1,27 @@
+
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='core' %}">Core</a>
+    &rsaquo; <a href="{% url 'admin:core_donation_changelist' %}">Donations</a>
+    &rsaquo; Export Donations to CSV
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Export Donations to CSV</h1>
+<p>
+    Please select the month you would like to export donations to csv for.
+</p>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <div class="submit-row">
+        <input type="submit" value="Export To CSV" class="deletelink" name="_export">
+    </div>
+</form>
+{% endblock %}

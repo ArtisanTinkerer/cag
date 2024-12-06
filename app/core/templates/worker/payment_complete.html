@@ -1,0 +1,75 @@
+{% extends 'worker/base.html' %}
+{% load sumup %}
+
+{% block content %}
+{% if payment_success %}
+    <div>
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+            <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <div class="text-center mt-4">
+            <h2 className="mt-4 text-lg font-semibold text-gray-900">
+                Payment Complete
+            </h2>
+            <div>
+                <div class="py-2">
+                    <dt class="text-sm font-medium text-gray-500">Customer</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ donation.customer_name }}</dd>
+                </div>
+                <div class="py-2">
+                    <dt class="text-sm font-medium text-gray-500">Car Registration</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ donation.number_plate|upper }}</dd>
+                </div>
+                <div class="py-2">
+                    <dt class="text-sm font-medium text-gray-500">Payment</dt>
+                    <dd class="mt-1 text-sm text-gray-900">£{{ donation.amount }} [{{ payment_type }}]</dd>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="my-4">
+        {% include 'widgets/link.html' with text='Back to donations' href=donations_today_href back_link=True %}
+    </div>
+{% else %}
+    {# Payment can only not succeed when paying by card. #}
+    <div>
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </div>
+        <div class="text-center mt-4">
+            <h2 className="mt-4 text-lg font-semibold text-gray-900">
+                Card Payment Failed
+            </h2>
+            <div>
+                <div class="py-2">
+                    <dt class="text-sm font-medium text-gray-500">Customer</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ donation.customer_name }}</dd>
+                </div>
+                <div class="py-2">
+                    <dt class="text-sm font-medium text-gray-500">Car Registration</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ donation.number_plate|upper }}</dd>
+                </div>
+                <div class="py-2">
+                    <dt class="text-sm font-medium text-gray-500">Payment</dt>
+                    <dd class="mt-1 text-sm text-gray-900">£{{ donation.amount }}</dd>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="my-4">
+        {% generate_sumup_url donation as card_payment_url %}
+        {% url 'admin-payment-complete' donation.id as cash_payment_url %}
+        {% url 'admin-donations-today' as donations_url %} 
+
+        {% include 'widgets/link.html' with text='Re-try card payment' href=card_payment_url %}
+        {% with cash_payment_url|add:'?cash=True' as cash_payment_url_full %}
+            {% include 'widgets/link.html' with text='Paid with cash instead' href=cash_payment_url_full %}
+        {% endwith %}
+        {% include 'widgets/link.html' with text='Back to donations' href=donations_url back_link=True %}
+    </div>
+{% endif %}
+{% endblock content %}

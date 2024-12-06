@@ -1,0 +1,18 @@
+<div>
+    {% include 'widgets/forms/_label.html' %}
+    <div class="relative">
+        {% if prefix %}
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500 text-lg">
+                    £
+                </span>
+            </div>
+        {% endif %}
+            <input
+                {% include 'widgets/forms/_field_attrs.html' %}
+                type="{{ field.field.widget.input_type }}"
+                class="{% if prefix %}pl-7 {% endif %}block w-full appearance-none rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-blue-500"
+            />
+    </div>
+    {% include 'widgets/forms/_field_error.html' %}
+</div>

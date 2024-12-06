@@ -1,0 +1,30 @@
+<nav class="my-5">
+    <div class="flex items-center justify-center">
+        <ol class="flex items-center space-x-5">
+            {% for i in '1234'|make_list %}
+                {% if forloop.counter == step_num %}
+                    <!-- Current Step -->
+                    <li>
+                        <button class="relative flex items-center justify-center" aria-current="step">
+                            <span class="absolute w-5 h-5 p-px flex" aria-hidden="true">
+                                <span class="w-full h-full rounded-full bg-indigo-200"></span>
+                            </span>
+                            <span class="relative block w-2.5 h-2.5 bg-gradient rounded-full" aria-hidden="true"></span>
+                        </button>
+                    </li>
+                {% elif forloop.counter < step_num %}
+                    <!-- Completed Step -->
+                    <li>
+                        <button class="block w-2.5 h-2.5 bg-gradient rounded-full hover:bg-indigo-900"></button>
+                    </li>
+                {% else %}
+                    <!-- Upcoming Step -->
+                    <li>
+                        <button class="block w-2.5 h-2.5 bg-gray-200 rounded-full hover:bg-gray-400"></button>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </div>
+    <p class="text-sm font-medium text-center mx-auto mt-2">Step {{ step_num }} of 4</p>
+</nav>
