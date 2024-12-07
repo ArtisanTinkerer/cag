@@ -90,10 +90,10 @@
         .then(data => {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = ''; // Clear previous results
-            if (data.results && data.results.length > 0) {
-                data.results.forEach(result => {
+            if (data.length > 0) {
+                data.forEach(result => {
                     const p = document.createElement('p');
-                    p.textContent = result;
+                    p.textContent = result.first_name + " " + result.last_name;
                     resultsDiv.appendChild(p);
                 });
             } else {

@@ -213,7 +213,11 @@ def search(request):
         surname = request.GET.get('surname', '')
 
 
-        # Mock search results - replace with your actual logic
-        results = [f'Result for {postcode} {i}' for i in range(1, 6)]
-        return JsonResponse({'results': results})
+        #search the donations table for records with this postcode and surname
+        results = (Donation.objects.filter(postcode=postcode, last_name__icontains=surname)
+                   .values('id', 'first_name', 'last_name', 'address', 'postcode', 'amount', 'donation_date'))
+
+
+
+        return JsonResponse(list(results), safe=False)
     return JsonResponse({'error': 'Invalid request'}, status=400)
