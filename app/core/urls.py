@@ -18,8 +18,17 @@ urlpatterns = [
         views.Step3View.as_view(),
         name='step-3-customer-details',
     ),
+
     path(
-        'step-3/are-you-sure/<uuid:pk>/',
+        'step-4/customer-search',
+        views.SearchResults.as_view(),
+        name='step-4-customer-search',
+    ),
+
+
+
+    path(
+        'step-3/are-you-sure/<uuid:pk>/', #how does it know to get here
         views.Step3BView.as_view(),
         name='step-3-are-you-sure',
     ),

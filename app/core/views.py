@@ -62,12 +62,60 @@ class Step3View(StepMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         donation = self.get_object()
-        context['opt_out_link'] = reverse('step-3-are-you-sure', args=[donation.id])
+        context['opt_out_link'] = reverse('step-3-are-you-sure', args=[donation.id]) #links for the buttons
         context['boost_amount'] = round(donation.amount * Decimal(0.25), 2)
         return context
 
-    def get_success_url(self):
+    def get_success_url(self): #this is where to fo after
+        return reverse('step-4-customer-search')  # type: ignore
+
+
+
+class SearchResults(StepMixin, ListView):
+    """
+    Page for the user to select if they would like to Gift Aid their donation.
+    """
+
+    template_name = 'customer/step4-customer-search-results.html'
+
+
+    def get_queryset(self):
+
+       #search here using postcode and surname from previous donations
+        # Get surname and postcode from the request's GET parameters
+        surname = self.request.GET.get('surname', '')
+        postcode = self.request.GET.get('postcode', '')
+
+        # Perform the query if both fields are provided
+       # Perform the query and return the results
+
+        if surname and postcode:
+            return Donation.objects.filter(surname__icontains=surname, postcode__icontains=postcode)
+        return Donation.objects.none()
+
+
+    def get_success_url(self):# this is where to go next - after the form has posted
         return reverse('step-4-customer-email', args=[self.object.id])  # type: ignore
+
+
+
+
+class Step4View(StepMixin, UpdateView):
+    """
+    View to display a template showing donation has been submitted.
+    """
+
+    template_name = 'customer/step4-customer-email.html'
+    model = Donation
+    fields = ['email']
+    step_num = 4
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+
+    def get_success_url(self):
+        return reverse('step-5-complete', args=[self.object.id])  # type: ignore
 
 
 class Step3BView(StepMixin, DetailView):
@@ -91,21 +139,6 @@ class Step3BView(StepMixin, DetailView):
             'step-4-customer-email', args=[donation_id]
         )
         return context
-
-
-class Step4View(StepMixin, UpdateView):
-    """
-    View to display a template showing donation has been submitted.
-    """
-
-    template_name = 'customer/step4-customer-email.html'
-    model = Donation
-    fields = ['email']
-    step_num = 4
-
-    def get_success_url(self):
-        return reverse('step-5-complete', args=[self.object.id])  # type: ignore
-
 
 class Step5View(StepMixin, DetailView):
     """
