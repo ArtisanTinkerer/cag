@@ -1,15 +1,10 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
-<h1 class="text-xl font-bold">Search Results</h1>
+    <h1 class="text-xl font-bold">Search Results</h1>
 
-<p class="mt-2">
-    Below are the results matching the provided surname and postcode. Please select the relevant record to proceed.
-</p>
-
-{% if object_list %}
-    <form method="POST" >
-        {% csrf_token %}
+    {% if object_list %}
+        <!-- Display search results -->
         <table class="mt-4 table-auto w-full border-collapse border border-gray-300">
             <thead>
                 <tr class="bg-gray-100">
@@ -24,23 +19,24 @@
                         <td class="border border-gray-300 px-4 py-2">{{ donation.first_name }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ donation.last_name }}</td>
                         <td class="border border-gray-300 px-4 py-2 text-center">
-                            <input type="radio" name="donation_id" value="{{ donation.id }}" required>
+                            <input type="radio" name="donation_id" value="{{ donation.id }}">
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+    {% else %}
+        <!-- Fallback form when no search results -->
+        <p class="mt-4 text-red-500">
+            No matching donations found. Please enter your details to create a new record.
+        </p>
+    {% endif %}
 
-        <div class="mt-6 text-center">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                Proceed
-            </button>
-        </div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Submit
+        </button>
     </form>
-{% else %}
-    <p class="mt-4 text-red-500">
-        No records found matching the provided details. Please try again with different information.
-    </p>
-{% endif %}
-
 {% endblock %}

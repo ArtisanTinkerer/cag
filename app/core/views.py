@@ -73,34 +73,63 @@ class Step3View(StepMixin, UpdateView):
 
 
 
-class SearchResults(StepMixin, ListView):
-    """
-    Page for the user to select if they would like to Gift Aid their donation.
-    """
+from django.views.generic import ListView, CreateView
+from django.urls import reverse
+from django.shortcuts import redirect
+from .models import Donation
+from .forms import DonationForm
 
+class SearchResults(ListView, CreateView):
+    """
+    Display search results for donations or show a form to create a new one.
+    """
     template_name = 'customer/step4-customer-search-results.html'
-    step_num = 3
-
+    model = Donation
+    context_object_name = 'object_list'
+    form_class = DonationForm  # Use a custom form for the fallback
 
     def get_queryset(self):
-
-       #search here using postcode and surname from previous donations
-        # Get surname and postcode from the request's GET parameters
+        """
+        Perform the search based on GET parameters.
+        """
         last_name = self.request.GET.get('last_name', '')
         postcode = self.request.GET.get('postcode', '')
-
-
-       # Perform the query and return the results
 
         if last_name and postcode:
             return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode)
         return Donation.objects.none()
 
+    def get_context_data(self, **kwargs):
+        """
+        Add both the object list and form to the context for rendering.
+        """
+        context = {}
 
-    def get_success_url(self):# this is where to go next - after the form has posted
-        return reverse('step-4-customer-email', args=[self.object.id])  # type: ignore
+        object_list = self.get_queryset()
+        if object_list.exists():
+            context['object_list'] = object_list
+        else:
+            context['form'] = self.get_form()
 
-# need to display the rest
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle form submissions when creating a new donation.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            new_donation = form.save()
+            # Redirect to the next step with the new record's ID
+            return redirect(reverse('step-4-customer-email', args=[new_donation.id]))
+        # Re-render the template with errors if the form is invalid
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+
+
+
 
 
 class Step4View(StepMixin, UpdateView):
