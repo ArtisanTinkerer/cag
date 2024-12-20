@@ -1,75 +1,46 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
-<h1>
-    Boost your donation by 25p of Gift Aid for every £1 you donate!
-</h1>
+<h1 class="text-xl font-bold">Search Results</h1>
+
 <p class="mt-2">
-    "Gift Aid" can be reclaimed by CAG Trust / Challenge Adventure Group (Reg charity in England and Wales, number 1182688) from the tax you pay for the current tax year. If you pay tax (either income tax or capital gains tax) in this tax year your contribution can be boosted by <b>£{{ boost_amount }}</b> by allowing us to claim this tax back on your behalf. To do so please check the box below:"
+    Below are the results matching the provided surname and postcode. Please select the relevant record to proceed.
 </p>
 
-<div class="mt-4 relative flex items-start">
-    <div class="flex items-center h-5">
-        <input id="opt-in" name="opt-in" type="checkbox" class="focus:ring-bg-gradient h-4 w-4 text-bg-gradient border-gray-300 rounded">
-    </div>
-    <div class="ml-3 text-sm">
-        <label for="opt-in" class="font-medium text-gray-700">
-            I want to Gift Aid my donation of £{{ object.amount }} to CAG Trust / Challenge Adventure Group.
-            <span class="text-gray-500">I am a UK taxpayer and understand that if I pay less Income Tax and/or Capital Gains Tax than the amount of Gift Aid claimed on all my donations in that tax year it is my responsibility to pay any difference.</span>
-        </label>
-    </div>
-</div>
+{% if object_list %}
+    <form method="POST" >
+        {% csrf_token %}
+        <table class="mt-4 table-auto w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border border-gray-300 px-4 py-2 text-left">First Name</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left">Last Name</th>
+                    <th class="border border-gray-300 px-4 py-2 text-center">Select</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for donation in object_list %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-4 py-2">{{ donation.first_name }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ donation.last_name }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center">
+                            <input type="radio" name="donation_id" value="{{ donation.id }}" required>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-<div id="opt-out-link">
-    {% include 'widgets/link.html' with text='Next' href=opt_out_link %}
-</div>
-
-<form method="POST" id="customer-form" class="mt-4" style="display: none;">
-    {% csrf_token %}
-    <p class="mt-2">
-        Thank you!!! Your address is needed to identify you as a current UK taxpayer - please enter your FULL address in order to claim the gift aid or or the government will get it and we won't - we only use the details entered here to claim the relevant gift aid off the government. thank you for your help, it’s worth it!!
+        <div class="mt-6 text-center">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Proceed
+            </button>
+        </div>
+    </form>
+{% else %}
+    <p class="mt-4 text-red-500">
+        No records found matching the provided details. Please try again with different information.
     </p>
+{% endif %}
 
-    {% include 'widgets/forms/form_error.html' %}
-
-    <div class="space-y-3 mt-2">
-{#        {% include 'widgets/forms/select.html' with field=form.title required=True %}#}
-        {% include 'widgets/forms/input.html' with field=form.postcode required=True %}
-        {% include 'widgets/forms/input.html' with field=form.last_name required=True %}
-{#        {% include 'widgets/forms/input.html' with field=form.address required=True %}#}
-{#        {% include 'widgets/forms/input.html' with field=form.postal_town required=True %}#}
-{#        {% include 'widgets/forms/input.html' with field=form.postcode required=True %}#}
-    </div>
-
-
-    
-
-    <div id="results"></div>
-
-
-
-    {% include 'widgets/button.html' with text='Next' %}
-
-</form>
-
-<script>
-    (function() {
-        const optInInput = document.getElementById('opt-in');
-        const optOutLink = document.getElementById('opt-out-link');
-        const customerForm = document.getElementById('customer-form');
-
-        optInInput.onchange = function(e) {
-            if (e.target.checked) {
-                customerForm.style.display = 'block';
-                optOutLink.style.display = 'none';
-            } else {
-                customerForm.style.display = 'none';
-                optOutLink.style.display = 'block';
-            }
-        };
-    })();
-
-    
-
-</script>
-{% endblock content %}
+{% endblock %}

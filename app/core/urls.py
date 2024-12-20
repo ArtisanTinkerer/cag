@@ -21,7 +21,7 @@ urlpatterns = [
 
     path(
         'step-4/customer-search',
-        views.SearchResults.as_view(),
+        views.SearchResults.as_view(), # display results of the search
         name='step-4-customer-search',
     ),
 

@@ -52,6 +52,8 @@ class Step2View(StepMixin, UpdateView):
 class Step3View(StepMixin, UpdateView):
     """
     Page for the user to select if they would like to Gift Aid their donation.
+
+    Then add surname and postcode to search. Which then GETs to SearchResults.
     """
 
     template_name = 'customer/step3-customer-details.html'
@@ -77,27 +79,28 @@ class SearchResults(StepMixin, ListView):
     """
 
     template_name = 'customer/step4-customer-search-results.html'
+    step_num = 3
 
 
     def get_queryset(self):
 
        #search here using postcode and surname from previous donations
         # Get surname and postcode from the request's GET parameters
-        surname = self.request.GET.get('surname', '')
+        last_name = self.request.GET.get('last_name', '')
         postcode = self.request.GET.get('postcode', '')
 
-        # Perform the query if both fields are provided
+
        # Perform the query and return the results
 
-        if surname and postcode:
-            return Donation.objects.filter(surname__icontains=surname, postcode__icontains=postcode)
+        if last_name and postcode:
+            return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode)
         return Donation.objects.none()
 
 
     def get_success_url(self):# this is where to go next - after the form has posted
         return reverse('step-4-customer-email', args=[self.object.id])  # type: ignore
 
-
+# need to display the rest
 
 
 class Step4View(StepMixin, UpdateView):
