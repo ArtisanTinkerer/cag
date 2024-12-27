@@ -83,7 +83,7 @@ class SearchResults(ListView, CreateView):
     """
     Display search results for donations or show a form to create a new one.
     """
-    template_name = 'customer/step4-customer-search-results.html'
+
     model = Donation
     context_object_name = 'object_list'
     form_class = DonationForm  # Use a custom form for the fallback
@@ -99,6 +99,15 @@ class SearchResults(ListView, CreateView):
             return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode)
         return Donation.objects.none()
 
+    def get_template_names(self):
+        """
+        Return a different template based on whether results are found.
+        """
+        if self.get_queryset().exists():
+            return ['customer/step4-customer-search-results.html']
+        return ['customer/step4-customer-new.html']  # Template for no results
+
+
     def get_context_data(self, **kwargs):
         """
         Add both the object list and form to the context for rendering.
@@ -113,6 +122,7 @@ class SearchResults(ListView, CreateView):
 
 
         return context
+
 
     def post(self, request, *args, **kwargs):
         """

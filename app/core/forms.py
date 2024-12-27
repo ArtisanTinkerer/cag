@@ -41,42 +41,33 @@ class DonationForm(forms.ModelForm):
             'email',
         ]
 
-        # { % include
-        # 'widgets/forms/select.html'
-        # with field=form.title required=True %}  # }
-        # { % include
-        # 'widgets/forms/input.html'
-        # with field=form.postcode required=True %}
-        # { % include
-        # 'widgets/forms/input.html'
-        # with field=form.last_name required=True %}
-
-
-#{  # {% include 'widgets/forms/input.html' with field=form.address required=True %}#}
- #   {  # {% include 'widgets/forms/input.html' with field=form.postal_town required=True %}#}
-  #      {  # {% include 'widgets/forms/input.html' with field=form.postcode required=True %}#}
 
 
         widgets = {
-
             'title': forms.Select(
-                attrs={
-                    'class': 'form-select',
-                    'placeholder': 'Select your title'
-                },
-                template_name='widgets/forms/select.html'  # Specify your custom template
+                attrs={'class': 'form-select', 'placeholder': 'Select your title'}
             ),
-
-            'postcode': forms.Select(
-                attrs={
-                    'class': 'form-select',
-                    'placeholder': 'Postcode'
-                },
-                template_name='widgets/forms/input.html'  # Specify your custom template
+            'first_name': forms.TextInput(
+                attrs={'class': 'form-input', 'placeholder': 'Enter your first name'}
             ),
-
-
-
+            'last_name': forms.TextInput(
+                attrs={'class': 'form-input', 'placeholder': 'Enter your last name'}
+            ),
+            'address': forms.TextInput(
+                attrs={
+                    'class': 'form-input',
+                    'placeholder': 'Enter house name/number & road',
+                }
+            ),
+            'postal_town': forms.TextInput(
+                attrs={'class': 'form-input', 'placeholder': 'Enter your town/city'}
+            ),
+            'postcode': forms.TextInput(
+                attrs={'class': 'form-input', 'placeholder': 'Enter your postcode'}
+            ),
+            'email': forms.EmailInput(
+                attrs={'class': 'form-input', 'placeholder': 'Enter your email'}
+            ),
         }
         labels = {
             'title': 'Title',

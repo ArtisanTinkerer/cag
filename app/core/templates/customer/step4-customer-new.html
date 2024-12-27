@@ -1,0 +1,28 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+    <h1 class="text-xl font-bold">Search Results</h1>
+
+        <!-- Fallback form when no search results -->
+        <p class="mt-4 text-red-500">
+            No matching donations found. Please enter your details to create a new record.
+        </p>
+
+
+    <form method="POST" action="">
+        {% csrf_token %}
+
+        <div class="space-y-3 mt-2">
+            {% include 'widgets/forms/select.html' with field=form.title required=True %}
+            {% include 'widgets/forms/input.html' with field=form.postcode required=True %}
+            {% include 'widgets/forms/input.html' with field=form.last_name required=True %}
+            {% include 'widgets/forms/input.html' with field=form.address required=True %}
+            {% include 'widgets/forms/input.html' with field=form.postal_town required=True %}
+        </div>
+        
+        
+       {% include 'widgets/button.html' with text='Next' %}
+    </form>
+
+
+{% endblock %}

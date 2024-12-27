@@ -3,7 +3,6 @@
 {% block content %}
     <h1 class="text-xl font-bold">Search Results</h1>
 
-    {% if object_list %}
         <!-- Display search results -->
         <table class="mt-4 table-auto w-full border-collapse border border-gray-300">
             <thead>
@@ -25,18 +24,6 @@
                 {% endfor %}
             </tbody>
         </table>
-    {% else %}
-        <!-- Fallback form when no search results -->
-        <p class="mt-4 text-red-500">
-            No matching donations found. Please enter your details to create a new record.
-        </p>
-    {% endif %}
+   
 
-    <form method="POST" action="">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Submit
-        </button>
-    </form>
 {% endblock %}
