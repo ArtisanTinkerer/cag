@@ -33,51 +33,29 @@ class DonationForm(forms.ModelForm):
         model = Donation
         fields = [
             'title',
-            'first_name',
+            'postcode',
             'last_name',
             'address',
             'postal_town',
-            'postcode',
-            'email',
         ]
 
 
-
         widgets = {
-            'title': forms.Select(
-                attrs={'class': 'form-select', 'placeholder': 'Select your title'}
-            ),
-            'first_name': forms.TextInput(
-                attrs={'class': 'form-input', 'placeholder': 'Enter your first name'}
-            ),
-            'last_name': forms.TextInput(
-                attrs={'class': 'form-input', 'placeholder': 'Enter your last name'}
-            ),
-            'address': forms.TextInput(
-                attrs={
-                    'class': 'form-input',
-                    'placeholder': 'Enter house name/number & road',
-                }
-            ),
-            'postal_town': forms.TextInput(
-                attrs={'class': 'form-input', 'placeholder': 'Enter your town/city'}
-            ),
-            'postcode': forms.TextInput(
-                attrs={'class': 'form-input', 'placeholder': 'Enter your postcode'}
-            ),
-            'email': forms.EmailInput(
-                attrs={'class': 'form-input', 'placeholder': 'Enter your email'}
-            ),
+
         }
         labels = {
             'title': 'Title',
-            'first_name': 'First Name',
+            'postcode': 'Postcode',
             'last_name': 'Last Name',
             'address': 'Address',
-            'postal_town': 'Town/City',
-            'postcode': 'Postcode',
-            'email': 'Email Address',
+            'postal_town': 'Town/City'
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Debug: Print the fields and their labels during form initialization
+        for field_name, field in self.fields.items():
+            print(f"Field: {field_name}, ID: {field.widget.attrs.get('id', None)}")
 
     def clean_postcode(self):
         """Validate the format of the postcode."""
@@ -86,10 +64,4 @@ class DonationForm(forms.ModelForm):
             raise forms.ValidationError("Postcode must be at least 5 characters long.")
         return postcode
 
-    def clean_email(self):
-        """Validate that the email is properly formatted."""
-        email = self.cleaned_data.get('email')
-        if email and '@' not in email:
-            raise forms.ValidationError("Please enter a valid email address.")
-        return email
 

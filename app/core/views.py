@@ -86,7 +86,7 @@ class SearchResults(ListView, CreateView):
 
     model = Donation
     context_object_name = 'object_list'
-    form_class = DonationForm  # Use a custom form for the fallback
+    form_class = DonationForm
 
     def get_queryset(self):
         """
@@ -105,7 +105,8 @@ class SearchResults(ListView, CreateView):
         """
         if self.get_queryset().exists():
             return ['customer/step4-customer-search-results.html']
-        return ['customer/step4-customer-new.html']  # Template for no results
+        #name and postcode in th context
+        return ['customer/step4-customer-new.html']
 
 
     def get_context_data(self, **kwargs):
@@ -114,11 +115,29 @@ class SearchResults(ListView, CreateView):
         """
         context = {}
 
+
+
+        # Retrieve the search parameters from GET
+        last_name = self.request.GET.get('last_name', '')
+        postcode = self.request.GET.get('postcode', '')
+
+
         object_list = self.get_queryset()
+        #if we have some then return the results
+        #else display the form
         if object_list.exists():
             context['object_list'] = object_list
         else:
-            context['form'] = self.get_form()
+
+            form = self.get_form()
+            form.initial = {
+                'last_name': last_name,
+                'postcode': postcode,
+            }
+
+            context['form'] = form
+
+
 
 
         return context
