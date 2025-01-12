@@ -9,26 +9,24 @@ urlpatterns = [
         name='step-1-enter-registration',
     ),
     path(
-        'step-2/donation/<uuid:pk>/',
+        'step-2/donation/',
         views.Step2View.as_view(),
         name='step-2-donation-amount',
     ),
     path(
-        'step-3/gift-aid/<uuid:pk>/',
+        'step-3/gift-aid/',
         views.Step3View.as_view(),
         name='step-3-customer-details',
     ),
 
     path(
-        'step-4/customer-search',
+        'step-4/customer-search/',
         views.SearchResults.as_view(), # display results of the search
         name='step-4-customer-search',
     ),
 
-
-
     path(
-        'step-3/are-you-sure/<uuid:pk>/', #how does it know to get here
+        'step-3/are-you-sure/', #how does it know to get here
         views.Step3BView.as_view(),
         name='step-3-are-you-sure',
     ),

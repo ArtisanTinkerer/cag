@@ -1,5 +1,5 @@
 from decimal import Decimal
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, FormView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-
+from django import forms
 from .models import Donation
 from .mixins import StepMixin
 
@@ -20,36 +20,51 @@ from django.views.decorators.csrf import csrf_exempt
 # -------------------------------------------------------------------------------------------------
 
 
-class Step1View(StepMixin, CreateView):
+class Step1View(StepMixin, FormView):
     """
     Welcome page that asks the user to enter their number plate.
     """
-
-    model = Donation
-    fields = ['number_plate']
     template_name = 'customer/step1-enter-registration.html'
     step_num = 1
 
-    def get_success_url(self):
-        return reverse('step-2-donation-amount', args=[self.object.id])  # type: ignore
+    # Define the form inline in the view
+    class NumberPlateForm(forms.Form):
+        number_plate = forms.CharField(max_length=20)
 
+    def get_form_class(self):
+        return self.NumberPlateForm
 
-class Step2View(StepMixin, UpdateView):
+    def form_valid(self, form):
+        # Save the form data to the session instead of creating a Donation object
+        self.request.session['number_plate'] = form.cleaned_data['number_plate']
+        # Redirect to the next step
+        return redirect(reverse('step-2-donation-amount'))
+
+class Step2View(StepMixin, FormView):
     """
     Page for the user to enter their donation amount.
     """
 
     template_name = 'customer/step2-donation-amount.html'
-    model = Donation
-    fields = ['amount']
+
     step_num = 2
     back_url_name = ''
 
-    def get_success_url(self):
-        return reverse('step-3-customer-details', args=[self.object.id])  # type: ignore
+    # Define the form field inline in the view todo move this
+    class DonationAmountForm(forms.Form):
+        amount = forms.DecimalField(max_digits=10, decimal_places=2)
+
+    def get_form_class(self):
+        return self.DonationAmountForm
+
+    def form_valid(self, form):
+        # Save the amount to the session
+        self.request.session['amount'] = str(form.cleaned_data['amount'])
+        # Redirect to the next step without saving to the database
+        return redirect(reverse('step-3-customer-details'))
 
 
-class Step3View(StepMixin, UpdateView):
+class Step3View(StepMixin, FormView):
     """
     Page for the user to select if they would like to Gift Aid their donation.
 
@@ -57,19 +72,34 @@ class Step3View(StepMixin, UpdateView):
     """
 
     template_name = 'customer/step3-customer-details.html'
-    model = Donation
-    fields = ['title', 'first_name', 'last_name', 'address', 'postal_town', 'postcode']
     step_num = 3
+
+    # Define the form for the customer details
+    class CustomerDetailsForm(forms.Form):
+
+        last_name = forms.CharField(max_length=50)
+        postcode = forms.CharField(max_length=10)
+
+    def get_form_class(self):
+        return self.CustomerDetailsForm
+
+    def form_valid(self, form):
+        # Save the form data to the session or handle as needed
+        self.request.session['customer_details'] = form.cleaned_data
+
+        # Redirect to the next step (you can specify the URL or use reverse)
+        return redirect(reverse('step-4-customer-email'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        donation = self.get_object()
-        context['opt_out_link'] = reverse('step-3-are-you-sure', args=[donation.id]) #links for the buttons
-        context['boost_amount'] = round(donation.amount * Decimal(0.25), 2)
-        return context
+        # Retrieve the amount from the session and convert to Decimal
+        amount = Decimal(self.request.session.get('amount', 0))  # Default to 0 if not found
+        # Calculate the boost amount
+        context['boost_amount'] = round(amount * Decimal(0.25), 2)
 
-    def get_success_url(self): #this is where to fo after
-        return reverse('step-4-customer-search')  # type: ignore
+        # You can access session or other data here if needed
+        context['opt_out_link'] = reverse('step-3-are-you-sure')  # Link for opt-out (if needed)
+        return context
 
 
 
@@ -115,8 +145,6 @@ class SearchResults(ListView, CreateView):
         """
         context = {}
 
-
-
         # Retrieve the search parameters from GET
         last_name = self.request.GET.get('last_name', '')
         postcode = self.request.GET.get('postcode', '')
@@ -137,9 +165,6 @@ class SearchResults(ListView, CreateView):
 
             context['form'] = form
 
-
-
-
         return context
 
 
@@ -149,7 +174,14 @@ class SearchResults(ListView, CreateView):
         """
         form = self.get_form()
         if form.is_valid():
-            new_donation = form.save()
+            new_donation = form.save(commit=False)
+
+            amount_str = self.request.session.get('amount', '0')
+            number_plate = self.request.session.get('number_plate', '')
+            new_donation.amount = Decimal(amount_str)
+            new_donation.number_plate = number_plate
+            new_donation.save()
+
             # Redirect to the next step with the new record's ID
             return redirect(reverse('step-4-customer-email', args=[new_donation.id]))
         # Re-render the template with errors if the form is invalid
@@ -174,6 +206,8 @@ class Step4View(StepMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+    def get_object(self, queryset=None):
+        return get_object_or_404(Donation, pk=self.kwargs['pk'])
 
     def get_success_url(self):
         return reverse('step-5-complete', args=[self.object.id])  # type: ignore
