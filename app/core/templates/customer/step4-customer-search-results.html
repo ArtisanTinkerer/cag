@@ -2,7 +2,8 @@
 
 {% block content %}
     <h1 class="text-xl font-bold">Search Results</h1>
-
+    <form method="POST" action="">
+        {% csrf_token %}
         <!-- Display search results -->
         <table class="mt-4 table-auto w-full border-collapse border border-gray-300">
             <thead>
@@ -18,12 +19,33 @@
                         <td class="border border-gray-300 px-4 py-2">{{ donation.first_name }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ donation.last_name }}</td>
                         <td class="border border-gray-300 px-4 py-2 text-center">
-                            <input type="radio" name="donation_id" value="{{ donation.id }}">
+                            <input
+                                type="radio"
+                                name="selected_donation"
+                                value="{{ donation.id }}"
+                                onclick="setHiddenFields('{{ donation.first_name }}', '{{ donation.last_name }}', '{{ donation.id }}')"
+                            >
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-   
 
+        <!-- Hidden fields to store selected data -->
+        <input type="hidden" id="hidden_first_name" name="first_name">
+        <input type="hidden" id="hidden_last_name" name="last_name">
+        <input type="hidden" id="hidden_donation_id" name="donation_id">
+
+        <!-- Submit button -->
+        {% include 'widgets/button.html' with text='Next' %}
+    </form>
+
+    <script>
+        // JavaScript to set hidden fields when a row is selected
+        function setHiddenFields(firstName, lastName, donationId) {
+            document.getElementById('hidden_first_name').value = firstName;
+            document.getElementById('hidden_last_name').value = lastName;
+            document.getElementById('hidden_donation_id').value = donationId;
+        }
+    </script>
 {% endblock %}

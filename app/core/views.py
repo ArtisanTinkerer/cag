@@ -151,12 +151,11 @@ class SearchResults(ListView, CreateView):
 
 
         object_list = self.get_queryset()
-        #if we have some then return the results
-        #else display the form
-        if object_list.exists():
-            context['object_list'] = object_list
-        else:
 
+
+        if object_list.exists(): #if we have some then return the results
+            context['object_list'] = object_list
+        else: #else display the form
             form = self.get_form()
             form.initial = {
                 'last_name': last_name,
