@@ -10,6 +10,7 @@
                 <tr class="bg-gray-100">
                     <th class="border border-gray-300 px-4 py-2 text-left">First Name</th>
                     <th class="border border-gray-300 px-4 py-2 text-left">Last Name</th>
+
                     <th class="border border-gray-300 px-4 py-2 text-center">Select</th>
                 </tr>
             </thead>
@@ -23,7 +24,15 @@
                                 type="radio"
                                 name="selected_donation"
                                 value="{{ donation.id }}"
-                                onclick="setHiddenFields('{{ donation.first_name }}', '{{ donation.last_name }}', '{{ donation.id }}')"
+                                onclick="setHiddenFields(
+                                    '{{ donation.first_name }}',
+                                        '{{ donation.last_name }}',
+                                        '{{ donation.address }}',
+                                        '{{ donation.postal_town }}',
+                                        '{{ donation.postcode }}',
+                                        '{{ donation.title }}',
+                                        '{{ donation.number_plate}}',
+                                        '{{ donation.id }}')"
                             >
                         </td>
                     </tr>
@@ -34,6 +43,11 @@
         <!-- Hidden fields to store selected data -->
         <input type="hidden" id="hidden_first_name" name="first_name">
         <input type="hidden" id="hidden_last_name" name="last_name">
+        <input type="hidden" id="hidden_address" name="address">
+        <input type="hidden" id="hidden_town" name="postal_town">
+        <input type="hidden" id="hidden_postcode" name="postcode">
+        <input type="hidden" id="hidden_title" name="title">
+        <input type="hidden" id="hidden_number_plate" name="number_plate">
         <input type="hidden" id="hidden_donation_id" name="donation_id">
 
         <!-- Submit button -->
@@ -42,9 +56,14 @@
 
     <script>
         // JavaScript to set hidden fields when a row is selected
-        function setHiddenFields(firstName, lastName, donationId) {
+        function setHiddenFields(firstName, lastName,address, town, postcode, title, number_plate, donationId) {
             document.getElementById('hidden_first_name').value = firstName;
             document.getElementById('hidden_last_name').value = lastName;
+            document.getElementById('hidden_address').value = address;
+            document.getElementById('hidden_town').value = town;
+            document.getElementById('hidden_postcode').value = postcode;
+            document.getElementById('hidden_title').value = title;
+            document.getElementById('hidden_number_plate').value = number_plate;
             document.getElementById('hidden_donation_id').value = donationId;
         }
     </script>

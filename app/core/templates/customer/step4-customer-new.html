@@ -14,10 +14,11 @@
 
         <div class="space-y-3 mt-2">
             {% include 'widgets/forms/select.html' with field=form.title required=True %}
-            {% include 'widgets/forms/input.html' with field=form.postcode required=True %}
+            {% include 'widgets/forms/input.html' with field=form.first_name required=True %}
             {% include 'widgets/forms/input.html' with field=form.last_name required=True %}
             {% include 'widgets/forms/input.html' with field=form.address required=True %}
             {% include 'widgets/forms/input.html' with field=form.postal_town required=True %}
+            {% include 'widgets/forms/input.html' with field=form.postcode required=True %}
         </div>
         
         

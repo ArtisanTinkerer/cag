@@ -35,6 +35,7 @@ class DonationForm(forms.ModelForm):
             'title',
             'postcode',
             'last_name',
+            'first_name',
             'address',
             'postal_town',
         ]
@@ -47,6 +48,7 @@ class DonationForm(forms.ModelForm):
             'title': 'Title',
             'postcode': 'Postcode',
             'last_name': 'Last Name',
+            'first_name': 'First Name',
             'address': 'Address',
             'postal_town': 'Town/City'
         }

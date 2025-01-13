@@ -109,7 +109,7 @@ from django.shortcuts import redirect
 from .models import Donation
 from .forms import DonationForm
 
-class SearchResults(ListView, CreateView):
+class SearchResults(ListView, CreateView): #todo change this to not use ListView and CreateView
     """
     Display search results for donations or show a form to create a new one.
     """
@@ -126,7 +126,7 @@ class SearchResults(ListView, CreateView):
         postcode = self.request.GET.get('postcode', '')
 
         if last_name and postcode:
-            return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode)
+            return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode).distinct()
         return Donation.objects.none()
 
     def get_template_names(self):
