@@ -3,13 +3,11 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView, F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
-from django.urls import reverse
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
+
+
 
 from django import forms
-from .models import Donation
 from .mixins import StepMixin
 
 from django.views.decorators.csrf import csrf_exempt

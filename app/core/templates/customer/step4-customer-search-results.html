@@ -2,6 +2,11 @@
 
 {% block content %}
     <h1 class="text-xl font-bold">Search Results</h1>
+
+    <p class="mt-4 text-red-500">
+            Please select your name from the list to complete your donation.
+    </p>
+
     <form method="POST" action="">
         {% csrf_token %}
         <!-- Display search results -->
