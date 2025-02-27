@@ -1,16 +1,19 @@
-from decimal import Decimal
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, FormView
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils import timezone
-from django.http import JsonResponse
-
-
+from decimal import Decimal
 
 from django import forms
-from .mixins import StepMixin
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, FormView
+
+from .forms import DonationForm
+from .mixins import StepMixin
+from .models import Donation
 
 
 # -------------------------------------------------------------------------------------------------
@@ -96,16 +99,13 @@ class Step3View(StepMixin, FormView):
         context['boost_amount'] = round(amount * Decimal(0.25), 2)
 
         # You can access session or other data here if needed
-        context['opt_out_link'] = reverse('step-3-are-you-sure')  # Link for opt-out (if needed)
+        #donation hasn't been created yet
+        context['opt_out_link'] = reverse('step-3-are-you-sure')
         return context
 
 
 
-from django.views.generic import ListView, CreateView
-from django.urls import reverse
-from django.shortcuts import redirect
-from .models import Donation
-from .forms import DonationForm
+
 
 class SearchResults(ListView, CreateView): #todo change this to not use ListView and CreateView
     """
@@ -124,7 +124,8 @@ class SearchResults(ListView, CreateView): #todo change this to not use ListView
         postcode = self.request.GET.get('postcode', '')
 
         if last_name and postcode:
-            return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode).distinct()
+            return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode).order_by(
+                '-donation_date')[:1]
         return Donation.objects.none()
 
     def get_template_names(self):
@@ -210,27 +211,85 @@ class Step4View(StepMixin, UpdateView):
         return reverse('step-5-complete', args=[self.object.id])  # type: ignore
 
 
-class Step3BView(StepMixin, DetailView):
+
+from .models import Donation
+
+
+
+
+from django.views.generic.edit import FormView
+from django.urls import reverse
+from django.shortcuts import redirect
+from django.utils import timezone
+from django import forms
+from decimal import Decimal
+from .models import Donation
+
+class Step3BView(StepMixin, FormView):
     """
     Page user is redirected to if they do not opt-in to Gift Aid.
+    Here, a new Donation object is created based on session data.
     """
-
     template_name = 'customer/step3b-are-you-sure.html'
-    model = Donation
     step_num = 3
 
+    class DonationForm(forms.Form):
+        gift_aid = forms.BooleanField(required=False, label="Would you like to Gift Aid this donation?")
+
+    def get_form_class(self):
+        return self.DonationForm
+
+    def dispatch(self, request, *args, **kwargs):
+        """Ensure that a donation is created before rendering the form."""
+        if 'donation_id' not in request.session:
+            donation = self.create_donation_from_session()
+            request.session['donation_id'] = str(donation.id)  # ✅ Convert UUID to string
+
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """Process the form submission."""
+        donation_id = self.request.session.get('donation_id')
+        donation = Donation.objects.get(id=donation_id)
+
+        # Update Gift Aid preference
+        donation.gift_aid = form.cleaned_data['gift_aid']
+        donation.save()
+
+        # Redirect to the next step
+        return redirect(reverse('step-4-customer-email', args=[donation.id]))
+
+    def create_donation_from_session(self):
+        """Create a new Donation object from session data."""
+        amount_str = self.request.session.get('amount', '0')
+        number_plate = self.request.session.get('number_plate', '')
+        customer_details = self.request.session.get('customer_details', {})
+        last_name = customer_details.get('last_name', '')
+        postcode = customer_details.get('postcode', '')
+
+        donation = Donation.objects.create(
+            amount=Decimal(amount_str),
+            number_plate=number_plate,
+            last_name=last_name,
+            postcode=postcode,
+            donation_date=timezone.now(),
+        )
+
+        return donation
+
     def get_context_data(self, **kwargs):
+        """Pass donation-related links to the template."""
         context = super().get_context_data(**kwargs)
 
-        donation_id = self.get_object().id
+        donation_id = self.request.session.get('donation_id')
+        if donation_id:
+            context['customer_details_link'] = reverse('step-3-customer-details')
+            context['customer_email_link'] = reverse('step-4-customer-email', args=[donation_id])
 
-        context['customer_details_link'] = reverse(
-            'step-3-customer-details', args=[donation_id]
-        )
-        context['customer_email_link'] = reverse(
-            'step-4-customer-email', args=[donation_id]
-        )
         return context
+
+
 
 class Step5View(StepMixin, DetailView):
     """

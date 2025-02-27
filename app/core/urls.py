@@ -21,12 +21,12 @@ urlpatterns = [
 
     path(
         'step-4/customer-search/',
-        views.SearchResults.as_view(), # display results of the search
+        views.SearchResults.as_view(),  # display results of the search
         name='step-4-customer-search',
     ),
 
     path(
-        'step-3/are-you-sure/', #how does it know to get here
+        'step-3/are-you-sure/',
         views.Step3BView.as_view(),
         name='step-3-are-you-sure',
     ),
