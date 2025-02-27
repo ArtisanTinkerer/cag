@@ -21,16 +21,28 @@
         <fieldset>
             <div class="grid grid-cols-3 gap-3">
                 <button id="amount-button-1" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                    <input type="radio" name="amount" value="0.00" class="sr-only">
+                    <span>£0.00</span>
+                </button>
+                <button id="amount-button-2" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                     <input type="radio" name="amount" value="5.00" class="sr-only">
                     <span>£5.00</span>
                 </button>
-                <button id="amount-button-2" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
-                    <input type="radio" name="amount" value="7.50" class="sr-only" >
+                <button id="amount-button-3" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                    <input type="radio" name="amount" value="7.50" class="sr-only">
                     <span>£7.50</span>
                 </button>
-                <button id="amount-button-3" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                <button id="amount-button-4" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                     <input type="radio" name="amount" value="10.00" class="sr-only" >
                     <span>£10.00</span>
+                </button>
+                <button id="amount-button-5" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                    <input type="radio" name="amount" value="15.00" class="sr-only" >
+                    <span>£15.00</span>
+                </button>
+                <button id="amount-button-6" name="amount-button" type="button" class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1 cursor-pointer focus:outline-none bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                    <input type="radio" name="amount" value="20.00" class="sr-only" >
+                    <span>£20.00</span>
                 </button>
             </div>
         </fieldset>
@@ -52,6 +64,9 @@
         const amountButton1 = document.getElementById('amount-button-1');
         const amountButton2 = document.getElementById('amount-button-2');
         const amountButton3 = document.getElementById('amount-button-3');
+        const amountButton4 = document.getElementById('amount-button-4');
+        const amountButton5 = document.getElementById('amount-button-5');
+        const amountButton6 = document.getElementById('amount-button-6');
         const form = document.getElementById('form');
 
         let checkedAmountButtonId;
@@ -99,6 +114,10 @@
         amountButton1.onclick = handleAmountClicked;
         amountButton2.onclick = handleAmountClicked;
         amountButton3.onclick = handleAmountClicked;
+        amountButton4.onclick = handleAmountClicked;
+        amountButton5.onclick = handleAmountClicked;
+        amountButton6.onclick = handleAmountClicked;
+
 
         form.onsubmit = function(e) {
             e.preventDefault();
