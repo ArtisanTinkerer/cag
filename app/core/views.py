@@ -1,13 +1,9 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, FormView
-from decimal import Decimal
-
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import F, Value
+from django.db.models.functions import Replace, Lower
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.shortcuts import redirect
-from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, FormView
 
@@ -124,8 +120,14 @@ class SearchResults(ListView, CreateView): #todo change this to not use ListView
         postcode = self.request.GET.get('postcode', '')
 
         if last_name and postcode:
-            return Donation.objects.filter(last_name__icontains=last_name, postcode__icontains=postcode).order_by(
-                '-donation_date')[:1]
+            normalized_postcode = postcode.replace(" ", "").lower()
+
+            return Donation.objects.annotate(
+                normalized_db_postcode=Lower(Replace(F("postcode"), Value(" "), Value("")))
+            ).filter(
+                last_name__icontains=last_name,
+                normalized_db_postcode=normalized_postcode
+            ).order_by('-donation_date')[:1]
         return Donation.objects.none()
 
     def get_template_names(self):
@@ -209,12 +211,6 @@ class Step4View(StepMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('step-5-complete', args=[self.object.id])  # type: ignore
-
-
-
-from .models import Donation
-
-
 
 
 from django.views.generic.edit import FormView
